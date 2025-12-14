@@ -1,10 +1,17 @@
 import logging
 import logging.config
 from pathlib import Path
+
 import yaml
+
+from engine.data_loader import load_csv
+from engine.dummy_strategy import DummyStrategy
 
 
 def setup_logging():
+    """
+    Configure logging from YAML configuration.
+    """
     config_path = Path("config/logging.yaml")
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
@@ -18,13 +25,24 @@ def main():
     sample_file = Path("data/raw/sample.csv")
 
     try:
-        from engine.data_loader import load_csv
-
+        # Load market data
         df = load_csv(sample_file)
         logger.info("Loaded %d rows of data", len(df))
-        logger.info("Date range: %s -> %s", df["date"].min(), df["date"].max())
+        logger.info(
+            "Date range: %s -> %s",
+            df["date"].min(),
+            df["date"].max(),
+        )
+
+        # Initialize strategy
+        strategy = DummyStrategy()
+
+        # Generate signal
+        signal = strategy.generate_signal(df)
+        logger.info("Generated signal: %s", signal)
+
     except Exception as e:
-        logger.error("Data loading failed: %s", e)
+        logger.exception("Application failed")
 
 
 if __name__ == "__main__":
