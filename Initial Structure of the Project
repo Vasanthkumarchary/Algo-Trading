@@ -1,0 +1,39 @@
+
+
+algo_trading_project/
+│
+├── config/
+│   ├── strategy_config.yaml
+│   ├── cost_config.yaml
+│   └── walkforward_config.yaml
+│
+├── data/
+│   ├── raw/
+│   ├── processed/
+│   └── calendar/
+│
+├── engine/
+│   ├── data_loader.py
+│   ├── feature_engine.py
+│   ├── signal_engine.py
+│   ├── structure.py
+│   ├── risk_engine.py
+│   ├── execution_engine.py
+│   ├── exit_engine.py
+│   ├── trade.py
+│   └── portfolio.py
+│
+├── backtest/
+│   ├── single_run.py
+│   ├── trade_simulator.py
+│   └── walk_forward.py
+│
+├── analysis/
+│   ├── metrics.py
+│   ├── regime.py
+│   ├── plots.py
+│   └── slippage_test.py
+│
+├── logs/
+│
+└── main.py
