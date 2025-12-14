@@ -7,6 +7,7 @@ import yaml
 from engine.data_loader import load_csv
 from engine.buy_and_hold import BuyAndHoldStrategy
 from backtest.engine import BacktestEngine
+from backtest.metrics import compute_equity_curve, compute_max_drawdown
 
 
 def setup_logging():
@@ -23,30 +24,27 @@ def main():
     setup_logging()
     logger = logging.getLogger(__name__)
 
-    # Load sample market data
-    data_path = Path("data/raw/sample.csv")
-    data = load_csv(data_path)
-
+    # Load data
+    data = load_csv(Path("data/raw/sample.csv"))
     logger.info("Loaded %d rows of data", len(data))
 
-    # Initialize strategy
+    # Strategy & backtest
     strategy = BuyAndHoldStrategy()
-
-    # Initialize backtest engine
     engine = BacktestEngine(
         data=data,
         strategy=strategy,
         initial_capital=100000,
     )
 
-    # Run backtest
     trades = engine.run()
 
-    logger.info("Backtest completed")
-    logger.info("Number of trades: %d", len(trades))
+    # Metrics
+    equity_df = compute_equity_curve(trades, initial_capital=100000)
+    max_dd = compute_max_drawdown(equity_df["equity"])
 
-    for trade in trades:
-        logger.info(trade)
+    logger.info("Backtest completed")
+    logger.info("Final equity: %.2f", equity_df["equity"].iloc[-1])
+    logger.info("Max drawdown: %.2f", max_dd)
 
 
 if __name__ == "__main__":
