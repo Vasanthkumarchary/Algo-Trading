@@ -28,12 +28,16 @@ def main():
     data = load_csv(Path("data/raw/sample.csv"))
     logger.info("Loaded %d rows of data", len(data))
 
-    # Strategy & backtest
+    # Strategy
     strategy = BuyAndHoldStrategy()
+
+    # Backtest with realism
     engine = BacktestEngine(
         data=data,
         strategy=strategy,
         initial_capital=100000,
+        transaction_cost=10.0,   # flat cost per trade
+        slippage=0.5,            # price slippage
     )
 
     trades = engine.run()
@@ -45,6 +49,9 @@ def main():
     logger.info("Backtest completed")
     logger.info("Final equity: %.2f", equity_df["equity"].iloc[-1])
     logger.info("Max drawdown: %.2f", max_dd)
+
+    for trade in trades:
+        logger.info(trade)
 
 
 if __name__ == "__main__":
