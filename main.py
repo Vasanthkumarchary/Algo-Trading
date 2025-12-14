@@ -21,20 +21,19 @@ def main():
     setup_logging()
     logger = logging.getLogger(__name__)
 
-    # Load data
-    data = load_csv(Path("data/raw/sample.csv"))
-    logger.info("Loaded %d rows of data", len(data))
+    data = load_csv(Path("data/raw/nifty_daily.csv"))
+    logger.info("Loaded %d rows of NIFTY data", len(data))
 
-    # Initialize SMA trend strategy
     strategy = SMATrendStrategy(window=200)
 
-    # Backtest with risk controls
     engine = BacktestEngine(
         data=data,
         strategy=strategy,
         initial_capital=100000,
         risk_per_trade=0.01,
-        max_drawdown=0.10,
+        max_drawdown=0.20,
+        atr_period=14,
+        atr_multiplier=2.0,
         transaction_cost=10.0,
         slippage=0.5,
     )
@@ -44,12 +43,10 @@ def main():
     equity_df = compute_equity_curve(trades, initial_capital=100000)
     max_dd = compute_max_drawdown(equity_df["equity"])
 
-    logger.info("Backtest completed")
+    logger.info("ATR-based baseline completed")
     logger.info("Final equity: %.2f", equity_df["equity"].iloc[-1])
     logger.info("Max drawdown observed: %.2f", max_dd)
-
-    for trade in trades:
-        logger.info(trade)
+    logger.info("Total trades: %d", len(trades))
 
 
 if __name__ == "__main__":
