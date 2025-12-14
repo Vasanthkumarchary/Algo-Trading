@@ -5,7 +5,8 @@ from pathlib import Path
 import yaml
 
 from engine.data_loader import load_csv
-from engine.dummy_strategy import DummyStrategy
+from engine.buy_and_hold import BuyAndHoldStrategy
+from backtest.engine import BacktestEngine
 
 
 def setup_logging():
@@ -22,27 +23,30 @@ def main():
     setup_logging()
     logger = logging.getLogger(__name__)
 
-    sample_file = Path("data/raw/sample.csv")
+    # Load sample market data
+    data_path = Path("data/raw/sample.csv")
+    data = load_csv(data_path)
 
-    try:
-        # Load market data
-        df = load_csv(sample_file)
-        logger.info("Loaded %d rows of data", len(df))
-        logger.info(
-            "Date range: %s -> %s",
-            df["date"].min(),
-            df["date"].max(),
-        )
+    logger.info("Loaded %d rows of data", len(data))
 
-        # Initialize strategy
-        strategy = DummyStrategy()
+    # Initialize strategy
+    strategy = BuyAndHoldStrategy()
 
-        # Generate signal
-        signal = strategy.generate_signal(df)
-        logger.info("Generated signal: %s", signal)
+    # Initialize backtest engine
+    engine = BacktestEngine(
+        data=data,
+        strategy=strategy,
+        initial_capital=100000,
+    )
 
-    except Exception as e:
-        logger.exception("Application failed")
+    # Run backtest
+    trades = engine.run()
+
+    logger.info("Backtest completed")
+    logger.info("Number of trades: %d", len(trades))
+
+    for trade in trades:
+        logger.info(trade)
 
 
 if __name__ == "__main__":
