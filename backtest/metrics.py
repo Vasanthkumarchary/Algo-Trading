@@ -8,7 +8,18 @@ def compute_equity_curve(
 ) -> pd.DataFrame:
     """
     Build equity curve from executed trades.
+    Handles the case of zero trades safely.
     """
+
+    # No trades → flat equity
+    if not trades:
+        return pd.DataFrame(
+            {
+                "date": [None],
+                "equity": [initial_capital],
+            }
+        )
+
     equity = initial_capital
     records = []
 
@@ -18,7 +29,7 @@ def compute_equity_curve(
 
         records.append(
             {
-                "date": trade["date"],
+                "date": trade.get("date"),
                 "equity": equity,
             }
         )
