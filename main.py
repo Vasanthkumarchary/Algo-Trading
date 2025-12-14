@@ -5,7 +5,7 @@ from pathlib import Path
 import yaml
 
 from engine.data_loader import load_csv
-from engine.buy_and_hold import BuyAndHoldStrategy
+from engine.sma_trend_strategy import SMATrendStrategy
 from backtest.engine import BacktestEngine
 from backtest.metrics import compute_equity_curve, compute_max_drawdown
 
@@ -25,16 +25,16 @@ def main():
     data = load_csv(Path("data/raw/sample.csv"))
     logger.info("Loaded %d rows of data", len(data))
 
-    # Strategy
-    strategy = BuyAndHoldStrategy()
+    # Initialize SMA trend strategy
+    strategy = SMATrendStrategy(window=200)
 
     # Backtest with risk controls
     engine = BacktestEngine(
         data=data,
         strategy=strategy,
         initial_capital=100000,
-        risk_per_trade=0.01,     # 1% risk per trade
-        max_drawdown=0.10,       # 10% max drawdown
+        risk_per_trade=0.01,
+        max_drawdown=0.10,
         transaction_cost=10.0,
         slippage=0.5,
     )
