@@ -1,0 +1,20 @@
+# ============================
+# Global Project Settings
+# ============================
+
+project:
+  name: algo-trading
+  environment: development   # development | backtest | paper | live
+
+paths:
+  data_raw: data/raw
+  data_processed: data/processed
+  logs: logs
+
+market:
+  timezone: Asia/Kolkata
+  currency: INR
+
+trading:
+  capital: 100000        # placeholder
+  risk_per_trade: 0.01   # placeholder (1%)
