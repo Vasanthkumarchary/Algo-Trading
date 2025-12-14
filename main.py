@@ -11,9 +11,6 @@ from backtest.metrics import compute_equity_curve, compute_max_drawdown
 
 
 def setup_logging():
-    """
-    Configure logging from YAML configuration.
-    """
     config_path = Path("config/logging.yaml")
     with open(config_path, "r") as f:
         config = yaml.safe_load(f)
@@ -31,24 +28,25 @@ def main():
     # Strategy
     strategy = BuyAndHoldStrategy()
 
-    # Backtest with realism
+    # Backtest with risk controls
     engine = BacktestEngine(
         data=data,
         strategy=strategy,
         initial_capital=100000,
-        transaction_cost=10.0,   # flat cost per trade
-        slippage=0.5,            # price slippage
+        risk_per_trade=0.01,     # 1% risk per trade
+        max_drawdown=0.10,       # 10% max drawdown
+        transaction_cost=10.0,
+        slippage=0.5,
     )
 
     trades = engine.run()
 
-    # Metrics
     equity_df = compute_equity_curve(trades, initial_capital=100000)
     max_dd = compute_max_drawdown(equity_df["equity"])
 
     logger.info("Backtest completed")
     logger.info("Final equity: %.2f", equity_df["equity"].iloc[-1])
-    logger.info("Max drawdown: %.2f", max_dd)
+    logger.info("Max drawdown observed: %.2f", max_dd)
 
     for trade in trades:
         logger.info(trade)
