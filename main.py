@@ -8,6 +8,7 @@ from engine.data_loader import load_csv
 from engine.sma_trend_strategy import SMATrendStrategy
 from backtest.engine import BacktestEngine
 from backtest.metrics import compute_equity_curve, compute_max_drawdown
+from backtest.trade_analysis import analyze_trades
 
 
 def setup_logging():
@@ -43,10 +44,19 @@ def main():
     equity_df = compute_equity_curve(trades, initial_capital=100000)
     max_dd = compute_max_drawdown(equity_df["equity"])
 
-    logger.info("ATR-based baseline completed")
-    logger.info("Final equity: %.2f", equity_df["equity"].iloc[-1])
-    logger.info("Max drawdown observed: %.2f", max_dd)
-    logger.info("Total trades: %d", len(trades))
+    stats = analyze_trades(trades)
+
+    logger.info("Trade-level analysis completed")
+    logger.info("Final equity: %.2f", equity_df['equity'].iloc[-1])
+    logger.info("Max drawdown: %.2f", max_dd)
+
+    logger.info("Total closed trades: %d", stats["total_trades"])
+    logger.info("Win rate: %.2f%%", stats["win_rate"] * 100)
+    logger.info("Average win: %.2f", stats["avg_win"])
+    logger.info("Average loss: %.2f", stats["avg_loss"])
+    logger.info("Expectancy per trade: %.2f", stats["expectancy"])
+    logger.info("STOP exits: %d", stats["stop_exits"])
+    logger.info("Regime exits: %d", stats["regime_exits"])
 
 
 if __name__ == "__main__":
