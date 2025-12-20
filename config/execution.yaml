@@ -1,0 +1,30 @@
+run:
+  mode: backtest
+  capital: 100000
+  data_path: data/raw/nifty_daily.csv
+
+portfolio:
+  allocation:
+    trend: 0.70
+    mean_reversion: 0.30
+
+trend_strategy:
+  enabled: true
+  sma_window: 200
+  risk_per_trade: 0.01
+  atr_period: 14
+  atr_multiplier: 2.0
+
+mean_reversion_strategy:
+  enabled: true
+  mean_window: 20
+  regime_window: 200
+  atr_period: 14
+  entry_atr: 1.0
+  risk_per_trade: 0.005
+  atr_multiplier: 1.0
+
+execution:
+  transaction_cost: 10.0
+  slippage: 0.5
+  max_drawdown: 0.20
